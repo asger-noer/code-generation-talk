@@ -1,0 +1,166 @@
+openapi: "3.1.0"
+info:
+  version: "0.1.0"
+  title: TODO Application
+  contact:
+    name: Asger Noer
+    email: asger@noer.dev
+  description: This is the spec for the NPVR solution.
+servers:
+  - url: http://localhost:3000/api
+
+security:
+  - api-key: []
+paths:
+  /test:
+    get:
+      operationId: test
+      summary: test
+      description: testtesttesttesttesttesttesttesttesttest
+  /reminders:
+    post:
+      operationId: CreateReminder
+      summary: Create new reminder
+      description: |
+        This enpoint will create a new reminder with the `created` time set to the
+        current time and `status` to `created`.
+      responses: 
+        '201':
+          $ref: "#/components/responses/single-reminder"
+        '4xx':
+          $ref: "#/components/responses/error"
+    get:
+      operationId: GetAllReminders
+      summary: Get all reminders
+      description: Returns all reminders sorted the the creation date.
+      responses:
+        '200':
+          $ref: "#/components/responses/all-reminders"
+        '4xx':
+          $ref: "#/components/responses/error"
+  /reminders/{reminderID}:
+    get:
+      operationId: GetSingleReminder
+      summary: Get single reminder
+      description: Returns a single reminder based on the provided `reminderID`.
+      parameters: 
+        - $ref: "#/components/parameters/reminderID"
+      responses:
+        '200':
+          $ref: "#/components/responses/single-reminder"
+        '4xx':
+          $ref: "#/components/responses/error"
+    patch:
+      operationId: UpdateReminder
+      summary: Update reminder
+      description: |
+        Allows updates to be made on a recording. It will return the updated
+        recording.
+      parameters: 
+        - $ref: "#/components/parameters/reminderID"
+        - $ref: "#/components/parameters/status"
+      responses:
+        '200':
+          $ref: "#/components/responses/single-reminder"
+        '4xx':
+          $ref: "#/components/responses/error"
+    delete: 
+      operationId: DeleteReminder
+      summary: Delete reminder
+      description: |
+        This endpoint will delete the reminder. It will always return `200 - OK`
+      parameters: 
+        - $ref: "#/components/parameters/reminderID"
+      responses:
+        '200':
+          $ref: "#/components/responses/single-reminder"
+        '4xx':
+          $ref: "#/components/responses/error"
+      
+components:
+  parameters: 
+    reminderID: 
+      name: reminderID
+      in: path
+      x-go-name: ID
+      schema: 
+        $ref: "#/components/schemas/reminderID"
+    status: 
+      name: status
+      in: query
+      x-go-name: QueryStatus
+      schema: 
+        $ref: "#/components/schemas/status"
+  responses: 
+    error:
+      description: An errors message
+      x-go-name: ErrorReponse
+      content: 
+        application/json:
+          schema: 
+            $ref: "#/components/schemas/error"
+    all-reminders:
+      description: All reminders
+      content: 
+        application/json:
+          schema: 
+            $ref: "#/components/schemas/reminders"
+    single-reminder:
+      description: A single reminder
+      content: 
+        application/json: 
+          schema: 
+            $ref: "#/components/schemas/reminder"
+  schemas: 
+    error:
+      type: object
+      properties: 
+        message:
+          type: string
+        error:
+          type: string
+          x-go-type: error
+    reminders:
+      type: array
+      items: 
+        $ref: "#/components/schemas/reminder"
+    reminder:
+      type: object
+      description: A unique reminder
+      required: 
+        - id
+        - title
+        - description
+        - status
+        - created
+      properties: 
+        id:
+          $ref: "#/components/schemas/reminderID"
+        title:
+          type: string
+          example: Major Keys to Success
+        description:
+          type: string
+          example: |
+            Lorem Khaled Ipsum is a major key to success. They will try to close
+            the door on you, just open it. Always remember in the jungle there's
+            a lot of they in there, after you overcome they, you will make it to
+            paradise.
+        status:
+          $ref: "#/components/schemas/status"
+        created:
+          type: string
+          format: date-time
+    reminderID:
+        type: string
+        format: uuid
+        x-go-type: uuid.UUID
+        x-go-import: github.com/google/uuid
+    status:
+      type: string
+      enum: ['created', 'doing', 'done']
+  securitySchemes: 
+    api-key:
+      name: api-key
+      in: header
+      type: apiKey 

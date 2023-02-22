@@ -1,0 +1,5 @@
+package: rest
+generate:
+  - server
+  - types
+output: rest/api.gen.go
