@@ -1,4 +1,4 @@
-# Write less code, be more effetive
+# Write less code, be more effective
 
 Have you ever been knees deep writing http handlers or database interface, and
 just wishing someone else would have saved you sanity from that?
